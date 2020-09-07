@@ -23,9 +23,12 @@
       -
          name: add docker repository
          apt_repository:
-            repo: 'deb https://download.docker.com/linux/ubuntu'
+            repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
             state: present
-            update_cache: 'yes'
+      - 
+        name: update cache
+        apt:
+          update_cache: 'yes'
       -
          name: install docker
          apt:
@@ -33,82 +36,3 @@
                - docker-ce
                - docker-ce-cli
                - containerd.io
--
-   hosts: all
-   gather_facts: true
-   tasks:
-      -
-         name: update packages
-         apt:
-            update_cache: 'yes'
-      -
-         name: install required packages
-         apt:
-            pkg:
-               - apt-transport-https
-               - curl
-               - ca-certificates
-               - gnupg-agent
-               - software-properties-common
-      -
-         name: add docker gpg key
-         shell: >-
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
-            apt-key add -
-      -
-         name: copy repo script
-         copy:
-            src: ./script.sh
-            dest: ~/script.sh
-      -
-         name: add docker repository
-         shell: sudo chmod +x script.sh && ./script.sh
-      -
-         name: install docker
-         apt:
-            force_apt_get: 'yes'
-            pkg:
-               - docker-ce
-               - docker-ce-cli
-               - containerd.io
-      -
-         name: clean up repo script
-         file:
-            path: ~/script.sh
-            state: absent
--
-   hosts: all
-   gather_facts: true
-   tasks:
-      -
-         name: update packages
-         apt:
-            update_cache: 'yes'
-      -
-         name: install required packages
-         apt:
-            pkg:
-               - apt-transport-https
-               - curl
-               - ca-certificates
-               - gnupg-agent
-               - software-properties-common
-      -
-         name: add docker gpg key
-         shell: >-
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
-            apt-key add -
-      -
-         name: add docker repository
-         apt_repository:
-            repo: 'deb https://download.docker.com/linux/ubuntu'
-            state: present
-            update_cache: 'yes'
-      -
-         name: install docker
-         apt:
-            pkg:
-               - docker-ce
-               - docker-ce-cli
-               - containerd.io
-            force_apt_get: 'yes'  
